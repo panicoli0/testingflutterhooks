@@ -14,19 +14,44 @@ void main() {
   );
 }
 
-Stream<String> getTime() => Stream.periodic(
-      const Duration(seconds: 1),
-      (_) => DateTime.now().toIso8601String(),
-    );
+// Stream<String> getTime() => Stream.periodic(
+//       const Duration(seconds: 1),
+//       (_) => DateTime.now().toIso8601String(),
+//     );
 
 class HomePage extends HookWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final dateTime = useStream(getTime());
+    final _controller = useTextEditingController();
+    final text = useState('');
+    useEffect(
+      () {
+        _controller.addListener(() {
+          text.value = _controller.text;
+        });
+        return null;
+      },
+      [_controller],
+    );
+
     return Scaffold(
-      appBar: AppBar(title: Text(dateTime.data ?? 'Home Page')),
+      appBar: AppBar(
+        title: const Text(
+          'Home Page',
+        ),
+      ),
+      body: Column(
+        children: [
+          TextField(
+            controller: _controller,
+          ),
+          Text(
+            'You typed: ${text.value}',
+          ),
+        ],
+      ),
     );
   }
 }
